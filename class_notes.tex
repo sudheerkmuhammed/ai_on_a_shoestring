@@ -1,0 +1,499 @@
+\documentclass[11pt,a4paper]{article}
+
+% Formatting and Geometry
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=0.75in]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% Color Palette (Shoestring Theme)
+\definecolor{ShoeNavy}{RGB}{24, 43, 73}
+\definecolor{ShoeCoral}{RGB}{215, 75, 40}
+\definecolor{ShoeTeal}{RGB}{20, 130, 120}
+\definecolor{ShoeGold}{RGB}{200, 140, 20}
+\definecolor{ShoeGray}{RGB}{245, 247, 250}
+\definecolor{ShoeBorder}{RGB}{220, 225, 232}
+
+% Hyperlink Setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=ShoeNavy,
+    citecolor=ShoeTeal,
+    urlcolor=ShoeCoral
+}
+
+% Section Styling
+\titleformat{\section}
+  {\Large\bfseries\color{ShoeNavy}}{\thesection.}{0.5em}{}[\titlerule]
+\titleformat{\subsection}
+  {\large\bfseries\color{ShoeTeal}}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{ShoeCoral}}{\thesubsubsection}{0.5em}{}
+
+% Custom Itemize
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=2pt}
+\setlist[enumerate]{leftmargin=*,itemsep=2pt,topsep=2pt}
+
+% Code Listing Configuration
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    backgroundcolor=\color{ShoeGray},
+    keywordstyle=\color{ShoeCoral}\bfseries,
+    stringstyle=\color{ShoeTeal},
+    commentstyle=\color{gray}\itshape,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{ShoeBorder},
+    tabsize=2,
+    xleftmargin=10pt,
+    xrightmargin=10pt
+}
+
+% Callout Boxes
+\newtcolorbox{protip}[1][Shoestring Pro Tip]{
+    colback=ShoeCoral!7,
+    colframe=ShoeCoral,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    arc=3mm,
+    boxrule=0.8pt,
+    left=6pt,right=6pt,top=4pt,bottom=4pt
+}
+
+\newtcolorbox{colibribox}[1][Spotlight: The Colibr\`i Breakthrough]{
+    colback=ShoeTeal!7,
+    colframe=ShoeTeal,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    arc=3mm,
+    boxrule=0.8pt,
+    left=6pt,right=6pt,top=4pt,bottom=4pt
+}
+
+\newtcolorbox{gotcha}[1][Common Trap / Anti-Pattern]{
+    colback=red!6,
+    colframe=red!70!black,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    arc=3mm,
+    boxrule=0.8pt,
+    left=6pt,right=6pt,top=4pt,bottom=4pt
+}
+
+\begin{document}
+
+% ----------------------------------------------------
+% HEADER
+% ----------------------------------------------------
+\begin{center}
+    {\Huge \textbf{\color{ShoeNavy}AI on a Shoestring}}\\[4pt]
+    {\large \textbf{\color{ShoeCoral}Class Notes \& Comprehensive Cheat Sheet}}\\[3pt]
+    \textit{Champagne Intelligence on a Beer Budget: Local LLMs, Agents, RAG \& Colibr\`i}\\[4pt]
+    \textbf{Sudheer K. Mohammed} $\cdot$ \textit{BARC}\\[2pt]
+    \rule{0.6\textwidth}{0.6pt}
+\end{center}
+
+\vspace{0.2cm}
+\begin{tcolorbox}[colback=ShoeNavy!5, colframe=ShoeNavy, arc=2mm, boxrule=0.8pt]
+    \centering
+    \textbf{The Shoestring Creed:} ``Never rent in the cloud what your toaster can compute for free. If your AI monthly bill exceeds your grocery bill, you aren't doing engineering---you're paying a stupidity tax.''
+\end{tcolorbox}
+
+\vspace{0.3cm}
+
+% ----------------------------------------------------
+% SECTION 1: PHILOSOPHY & WHY LOCAL
+% ----------------------------------------------------
+\section{The Philosophy of Shoestring AI: Why Run Locally?}
+\begin{itemize}
+    \item \textbf{The Subscription Black Hole}: Commercial SaaS models lock basic capabilities behind \$20/month per-user paywalls. Running locally restores zero-marginal-cost computing.
+    \item \textbf{Token Anxiety \& Financial Predictability}: Cloud APIs meter prompt tokens, completion tokens, and context caching. A runaway while-loop or bad agent recursive call can drain hundreds of dollars before dawn. Local inference costs \$0.00 per token.
+    \item \textbf{Absolute Privacy \& Compliance}:
+    \begin{itemize}
+        \item Proprietary source code, customer records, and personal documents never touch third-party servers.
+        \item Built-in immunity to model retraining on your private intellectual property.
+    \end{itemize}
+    \item \textbf{Zero Latency Jitter \& Offline Autonomy}: Functions in planes, trains, air-gapped server closets, or remote field sites without an internet connection.
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 2: NARROW VS BROAD AI
+% ----------------------------------------------------
+\section{Narrow vs. Broad AI: Right-Sizing Your Model}
+\begin{itemize}
+    \item \textbf{Broad / Frontier AI (70B -- 1T+ parameters)}:
+    \begin{itemize}
+        \item General-purpose behemoths trained on trillions of tokens.
+        \item Exceptional at high-abstract reasoning, multi-lingual poetry, complex thesis synthesis.
+        \item \textbf{The Penalty}: Demands multi-GPU clusters (8x H100s, 640GB+ VRAM) or massive cloud rental bills.
+    \end{itemize}
+    \item \textbf{Narrow / Small Language Models (SLMs, 1B -- 8B parameters)}:
+    \begin{itemize}
+        \item Specialized powerhouses: \textbf{Phi-3.5} (Microsoft), \textbf{Qwen-2.5} (Alibaba), \textbf{SmolLM2} (Hugging Face), \textbf{Llama-3.2} (Meta).
+        \item With domain fine-tuning and task-specific instruction prompts, a 3B--7B model frequently matches or beats a 70B model on parsing, JSON schema extraction, and shell command generation.
+        \item \textbf{The Shoestring Rule}: Pick the smallest model that reliably satisfies your acceptance tests. Running a 70B model to lowercase a string is architectural malpractice.
+    \end{itemize}
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 3: MODEL WEIGHTS & FORMATS
+% ----------------------------------------------------
+\section{AI Model Anatomy \& Weight Formats}
+\begin{itemize}
+    \item \textbf{What is a Model File?} A collection of neural network weight tensors ($\mathbf{W}$) and bias vectors ($\mathbf{b}$), accompanied by architectural metadata (layer count, attention head dimensions, context window length) and a tokenizer vocabulary.
+    \item \textbf{The Primary File Formats}:
+    \begin{itemize}
+        \item \textbf{Safetensors (\texttt{.safetensors})}:
+        \begin{itemize}
+            \item Hugging Face open standard replacing insecure PyTorch \texttt{.bin}/\texttt{.pt} pickle files.
+            \item Zero arbitrary code execution risk, zero deserialization overhead, fast memory-mapping (\texttt{mmap}). Default for training and fine-tuning.
+        \end{itemize}
+        \item \textbf{GGUF (GPT-Generated Unified Format)}:
+        \begin{itemize}
+            \item The undisputed universal format of consumer local inference, created by Georgi Gerganov (\texttt{llama.cpp}).
+            \item \textbf{Self-Contained}: Contains all model architecture metadata, tokenizer configuration, and quantized weights in a single binary file.
+            \item Supports split offloading between CPU system RAM and GPU VRAM seamlessly.
+        \end{itemize}
+        \item \textbf{ONNX \& EXL2}:
+        \begin{itemize}
+            \item \textbf{ONNX}: Standard for cross-platform edge inference (browsers, mobile, C\#/.NET).
+            \item \textbf{EXL2}: Ultra-fast variable-bitrate quantization designed exclusively for high-throughput Nvidia GPUs via ExLlamaV2.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 4: QUANTIZATION
+% ----------------------------------------------------
+\section{Model Quantization: Squeezing Giants into Laptops}
+\begin{itemize}
+    \item \textbf{Core Concept}: Neural networks are trained in 16-bit floating point (\texttt{FP16} = 2 bytes per weight). Quantization maps these continuous floats onto discrete low-bit integer bins (8-bit, 4-bit, or 2-bit).
+    \item \textbf{Why it Works}: Neural network activations are intrinsically tolerant to stochastic noise. Reducing precision by 75\% (from 16-bit to 4-bit) typically increases model perplexity (error) by less than 1.5\%.
+    \item \textbf{VRAM / RAM Calculation Formula}:
+    \[
+    \text{Required Memory (GB)} \approx \text{Parameter Count (in Billions)} \times \frac{\text{Quant Bit-Depth}}{8} \times 1.25 \quad (\text{includes KV cache overhead})
+    \]
+\end{itemize}
+
+\begin{center}
+\small
+\begin{tabular}{lllll}
+\toprule
+\textbf{Quantization Type} & \textbf{Effective Bits} & \textbf{Size (7B Model)} & \textbf{Perplexity Delta} & \textbf{Shoestring Verdict} \\
+\midrule
+\texttt{FP16} & 16.0 bits & 14.0 GB & Baseline (0.00) & Only for GPU billionaires \\
+\texttt{Q8\_0} & 8.5 bits & 7.7 GB & Negligible ($+0.01$) & Archival quality \\
+\texttt{Q5\_K\_M} & 5.5 bits & 5.1 GB & Almost imperceptible & Ideal if you have 16GB RAM \\
+\textbf{\texttt{Q4\_K\_M}} & \textbf{4.5 bits} & \textbf{4.4 GB} & \textbf{Tiny ($+0.08$)} & \textbf{The Universal Sweet Spot} \\
+\texttt{Q3\_K\_S} & 3.2 bits & 3.5 GB & Noticeable ($+0.35$) & Use only when severely constrained \\
+\texttt{Q2\_K} & 2.6 bits & 2.8 GB & Heavy degradation & Creative writing turns to soup \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{colibribox}[Colibr\`i Teaser: When Even 4-bit Won't Fit]
+    \small
+    \textbf{The Dilemma}: An 8B model at Q4 fits in 4.5GB RAM. But what if you want to run a \textbf{744B frontier MoE} model? At 4-bit, 744B still demands 370GB! How do you run that on a standard \$800 laptop with 24GB of RAM? \\
+    $\rightarrow$ \textit{Answer: Sparse Mixture of Experts + NVMe Streaming. See Section 8.}
+\end{colibribox}
+
+% ----------------------------------------------------
+% SECTION 5: LOCAL RUNTIMES
+% ----------------------------------------------------
+\section{The Local Runtimes Trinity: llama.cpp, Ollama, LM Studio}
+\begin{itemize}
+    \item \textbf{1. llama.cpp (The Engine Room)}:
+    \begin{itemize}
+        \item Written in pure C/C++ with SIMD optimizations (AVX2, AVX-512, Apple Metal, CUDA, ROCm, Vulkan).
+        \item Zero dependencies, compiles in seconds with \texttt{make} or \texttt{cmake}.
+        \item Supports fine-grained layer offloading: e.g., \texttt{-ngl 24} offloads 24 layers to GPU and keeps the rest in CPU RAM.
+    \end{itemize}
+    \item \textbf{2. Ollama (The Docker of AI)}:
+    \begin{itemize}
+        \item Wraps \texttt{llama.cpp} in a slick background daemon and CLI manager.
+        \item Automatically detects GPU capabilities, pulls quantized GGUF models, and manages memory.
+        \item Exposes a native REST API and an \textbf{OpenAI-compatible server} on port \texttt{11434}.
+    \end{itemize}
+    \item \textbf{3. LM Studio (The Visual Powerhouse)}:
+    \begin{itemize}
+        \item Desktop GUI (Electron/native) with built-in Hugging Face model search and downloader.
+        \item Real-time generation token/sec stats, GPU VRAM allocation slider, and local developer server.
+    \end{itemize}
+\end{itemize}
+
+\begin{protip}[Instant Terminal Mastery]
+\begin{lstlisting}[language=bash]
+# Install Ollama on Linux/macOS
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull and interact with a lean coding model
+ollama run qwen2.5-coder:3b "Write a Python script to sort a dictionary by value"
+\end{lstlisting}
+\end{protip}
+
+% ----------------------------------------------------
+% SECTION 6: HUGGING FACE ECOSYSTEM
+% ----------------------------------------------------
+\section{Navigating the Hugging Face Ecosystem}
+\begin{itemize}
+    \item \textbf{The Hub}: Central registry hosting open weights, datasets, benchmarks, and spaces.
+    \item \textbf{Model Naming Conventions}: e.g., \texttt{Qwen/Qwen2.5-7B-Instruct-GGUF}
+    \begin{itemize}
+        \item \textbf{Org / Creator}: \texttt{Qwen} (Alibaba), \texttt{meta-llama}, \texttt{microsoft}, \texttt{mistralai}.
+        \item \textbf{Parameter Size}: \texttt{3B}, \texttt{7B}, \texttt{14B}, \texttt{70B}.
+        \item \textbf{Tuning Type}: \texttt{-Base} (raw pretraining), \texttt{-Instruct} / \texttt{-Chat} (RLHF/DPO aligned).
+        \item \textbf{Format}: \texttt{-GGUF} (ready for Ollama/llama.cpp).
+    \end{itemize}
+    \item \textbf{Key Community Quantizers}:
+    \begin{itemize}
+        \item \textbf{bartowski}: The benchmark gold-standard for rapid, high-precision GGUF conversions.
+        \item \textbf{TheBloke}: Legendary community pioneer who quantized thousands of open models.
+    \end{itemize}
+    \item \textbf{Open LLM Leaderboard}: Filter by evaluation benchmarks (MMLU-Pro, GSM8k, MATH, IFEval) to identify models that punch above their parameter class.
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 7: DENSE VS MOE
+% ----------------------------------------------------
+\section{Architectures: Dense Models vs. Mixture of Experts (MoE)}
+\begin{itemize}
+    \item \textbf{Dense Models}: Every token passes through 100\% of the feed-forward network weights. (e.g., Llama-3-8B executes all 8 billion parameters on every word).
+    \item \textbf{Sparse Mixture of Experts (MoE)}:
+    \begin{itemize}
+        \item The dense feed-forward layer is divided into $E$ distinct expert sub-networks (e.g., 8, 16, or 64 experts).
+        \item A tiny, learned \textbf{Router Network} evaluates the token embedding and routes it to only the Top-$K$ experts (typically $K=2$).
+        \item \textbf{Example}: Mixtral 8x7B has 47B total parameters, but only activates $\sim$13B parameters per token.
+        \item \textbf{The Architectural Epiphany}: Since 85\%--95\% of weights sit idle for any given token, \textbf{why must they all reside in expensive VRAM?}
+    \end{itemize}
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 8: COLIBRI PROJECT
+% ----------------------------------------------------
+\section{Spotlight Study: The Colibr\`i Project (Extreme Shoestring)}
+\begin{colibribox}[The Colibr\`i Architecture: Pure C MoE Engine]
+    \textbf{The Mission}: Shatter the assumption that running a 744-Billion parameter frontier model requires an enterprise datacenter rack.
+    \begin{itemize}
+        \item \textbf{Language}: Handcrafted in pure C for raw memory and disk I/O control.
+        \item \textbf{Hardware Target}: A standard \$800 consumer laptop with only \textbf{24GB--25GB of RAM} and no dedicated GPU server rack.
+        \item \textbf{The 3-Tier Memory Hierarchy}:
+        \begin{enumerate}
+            \item \textbf{Tier 1: System RAM ($\sim$10--15 GB)}: Pins the shared dense attention layers, token embeddings, normalization weights, and router permanently into fast memory.
+            \item \textbf{Tier 2: High-Speed NVMe SSD ($\sim$370 GB)}: Houses the tens of thousands of routed expert parameters compressed in 4-bit quantization on disk.
+            \item \textbf{Tier 3: Dynamic On-Demand Streaming + LRU Cache}: As the model decodes token-by-token, the router identifies the 2 active experts. Colibr\`i streams those exact weights from the NVMe SSD into an LRU cache in RAM in real time!
+        \end{enumerate}
+        \item \textbf{Performance vs. Freedom}:
+        \begin{itemize}
+            \item Generation speed ranges from \textbf{0.5 to 1.8 tokens/sec}.
+            \item Is it instant? No. But it performs complex, frontier-level document analysis, code audit, and research locally, with zero cloud dependency and zero telemetry.
+        \end{itemize}
+    \end{itemize}
+\end{colibribox}
+
+% ----------------------------------------------------
+% SECTION 9: PYTHON INTEGRATION
+% ----------------------------------------------------
+\section{Connecting Local Models to Python}
+\begin{itemize}
+    \item \textbf{Direct Ollama Python Library}:
+\begin{lstlisting}[language=Python]
+import ollama
+
+res = ollama.chat(
+    model="llama3.2:3b",
+    messages=[{"role": "user", "content": "Explain RAM paging in one sentence."}]
+)
+print(res["message"]["content"])
+\end{lstlisting}
+    \item \textbf{Universal OpenAI API Drop-in}: Any code written for the official OpenAI SDK runs unchanged against Ollama:
+\begin{lstlisting}[language=Python]
+from openai import OpenAI
+
+client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+completion = client.chat.completions.create(
+    model="qwen2.5:3b",
+    messages=[{"role": "user", "content": "Return the first 5 prime numbers as a JSON array."}]
+)
+print(completion.choices[0].message.content)
+\end{lstlisting}
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 10: AUTONOMOUS AGENTS
+% ----------------------------------------------------
+\section{Local Autonomous Agents \& Tool Use (ReAct)}
+\begin{itemize}
+    \item \textbf{The ReAct (Reason + Act) Loop}:
+    \begin{enumerate}
+        \item \textbf{Prompt Injection}: User provides a high-level goal and available Python tools.
+        \item \textbf{Reasoning}: Model outputs structured tool intent: \texttt{\{"tool": "query\_db", "args": \{"id": 42\}\}}.
+        \item \textbf{Execution}: Python executes the function locally in the sandbox.
+        \item \textbf{Feedback}: Tool observation is appended to message history.
+        \item \textbf{Resolution}: Model evaluates whether the goal is completed or another action is required.
+    \end{enumerate}
+    \item \textbf{Deterministic JSON with Pydantic}: Small models can drift in formatting. Enforce strict JSON output using Ollama's schema validator:
+\begin{lstlisting}[language=Python]
+from pydantic import BaseModel
+
+class ToolCall(BaseModel):
+    command: str
+    target_file: str
+
+res = ollama.chat(
+    model="qwen2.5:3b",
+    messages=[...],
+    format=ToolCall.model_json_schema()
+)
+\end{lstlisting}
+    \item \textbf{Zero-Cost Loops}: Multi-step agent problem solving that would cost \$5 in cloud tokens costs nothing locally.
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 11: RAG ON A SHOESTRING
+% ----------------------------------------------------
+\section{RAG on a Shoestring: Local Private Retrieval}
+\begin{itemize}
+    \item \textbf{Why RAG?} LLMs suffer from context limits and hallucinations. RAG grounds responses in your private local documents.
+    \item \textbf{Local Vector Databases}:
+    \begin{itemize}
+        \item \textbf{ChromaDB}: Serverless, lightweight, persists to a local directory or runs in-memory.
+        \item \textbf{FAISS (Facebook AI Similarity Search)}: Pure C++/Python vector search for millions of embeddings.
+    \end{itemize}
+    \item \textbf{Shoestring Embedding Models}:
+    \begin{itemize}
+        \item \texttt{bge-small-en-v1.5} (33M params, $\sim$130MB): Outperforms OpenAI Ada-002 on retrieval benchmarks.
+        \item \texttt{nomic-embed-text} (available directly inside Ollama with \texttt{ollama pull nomic-embed-text}).
+    \end{itemize}
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 12: COMPLETE END-TO-END DEMO
+% ----------------------------------------------------
+\section{Complete End-to-End Demo: Prompt to Result}
+\begin{lstlisting}[language=Python]
+import json, ollama
+from pydantic import BaseModel, Field
+
+# 1. Define Strict Pydantic Schema
+class ServerIncident(BaseModel):
+    service: str = Field(description="Name of crashed service")
+    error_code: int = Field(description="HTTP or kernel error code")
+    recommended_action: str = Field(description="Actionable fix")
+
+# 2. Raw Unstructured Log Input
+raw_log = """
+[ERROR] 2026-10-16 21:05:12.341 [auth_service] worker-3 crashed!
+Code: 504 Gateway Timeout while contacting Redis cluster at 10.0.4.12.
+Recommend immediate restart of sentinel node.
+"""
+
+# 3. Local Model Structured Extraction
+response = ollama.chat(
+    model="qwen2.5:3b",
+    messages=[
+        {"role": "system", "content": "Extract server incident reports into strict JSON."},
+        {"role": "user", "content": raw_log}
+    ],
+    format=ServerIncident.model_json_schema()
+)
+
+# 4. Validate and Execute Tool in Python
+incident = ServerIncident.model_validate_json(response['message']['content'])
+print(f"AUTOMATED ALERT: {incident.service} (Code {incident.error_code})")
+print(f"ACTION REQUIRED: {incident.recommended_action}")
+\end{lstlisting}
+
+% ----------------------------------------------------
+% SECTION 13: LOCAL CODING & HARNESS
+% ----------------------------------------------------
+\section{Local Coding Copilots \& Evaluation Harnesses}
+\begin{itemize}
+    \item \textbf{Continue.dev (VS Code \& JetBrains)}:
+    \begin{itemize}
+        \item Replaces GitHub Copilot completely.
+        \item Configure Tab-Autocomplete with an ultra-fast 1.5B model (e.g. \texttt{qwen2.5-coder:1.5b}) for $<30$ms latency.
+        \item Configure Chat \& Inline Refactor with a 7B model (e.g. \texttt{qwen2.5-coder:7b}).
+    \end{itemize}
+    \item \textbf{Aider (Terminal Pair Programmer)}:
+    \begin{itemize}
+        \item Interacts with git repositories directly from the shell: \texttt{aider --model ollama/qwen2.5-coder:7b}.
+        \item Automatically reads git diffs, edits multi-line files, and crafts concise git commit messages.
+    \end{itemize}
+    \item \textbf{Local Test Evaluation Harness}:
+    \begin{itemize}
+        \item Create an automated \texttt{pytest} suite with 20--50 fixed prompts.
+        \item Benchmark new model releases locally on schema adherence, code syntax validity, and tokens/sec before swapping models.
+    \end{itemize}
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 14: BUILDING CUSTOM LOCAL APPS
+% ----------------------------------------------------
+\section{Building Custom Standalone Applications}
+\begin{itemize}
+    \item \textbf{Architecture}: FastAPI (API backend) + Streamlit or Gradio (Web UI) + Ollama/llama.cpp (Inference backend).
+    \item \textbf{Deployment Strategy}:
+    \begin{itemize}
+        \item Containerize with a single multi-stage \texttt{Dockerfile}.
+        \item Deploy on edge devices (Raspberry Pi 5 with 8GB, Intel NUC, or old office desktop).
+        \item Perfect for air-gapped hospitals, legal offices, and industrial controllers.
+    \end{itemize}
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 15: PERSONAL PRODUCTIVITY
+% ----------------------------------------------------
+\section{AI for Supercharged Personal Productivity}
+\begin{itemize}
+    \item \textbf{Terminal Shell Translator}: Pipe messy tasks to local models instead of scouring documentation.
+    \item \textbf{Private Audio Meeting Transcriber}: Run \texttt{whisper.cpp} (or \texttt{insanely-fast-whisper}) locally to convert 1-hour voice recordings to text in 2 minutes, then summarize with \texttt{llama3.2:3b}.
+    \item \textbf{Local Git Commit Generator}:
+\begin{lstlisting}[language=bash]
+git diff --cached | ollama run qwen2.5-coder:3b "Write a 1-line git commit message in conventional commit format:"
+\end{lstlisting}
+\end{itemize}
+
+% ----------------------------------------------------
+% SECTION 16: HARDWARE SIZING & CHEAT SHEET
+% ----------------------------------------------------
+\section{Hardware Sizing Cheat Sheet \& Shoestring Rules}
+\begin{center}
+\small
+\begin{tabular}{llll}
+\toprule
+\textbf{Hardware Setup} & \textbf{Recommended Model} & \textbf{Quantization} & \textbf{Typical Speed} \\
+\midrule
+Standard Laptop (8GB RAM, CPU) & Llama-3.2-3B or SmolLM2 & \texttt{Q4\_K\_M} & 15--22 t/s \\
+Mid-Tier PC (16GB RAM, integrated graphics) & Qwen2.5-7B or Llama-3.1-8B & \texttt{Q4\_K\_M} & 8--14 t/s \\
+Budget GPU (RTX 3060 12GB VRAM) & Qwen2.5-Coder-7B (Full VRAM) & \texttt{Q8\_0} or \texttt{Q5\_K\_M} & 55--75 t/s \\
+Apple Silicon (M1/M2/M3 Pro/Max 36GB+) & Qwen2.5-32B or Command-R & \texttt{Q4\_K\_M} & 18--30 t/s \\
+\textbf{Colibr\`i Mode} (24GB RAM + Gen4 NVMe) & \textbf{GLM-4/5.2 MoE (744B!)} & \texttt{Q4} SSD Stream & 0.5--1.8 t/s \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{gotcha}[Three Deadly Sins of Local AI]
+    \begin{enumerate}
+        \item \textbf{The 128k Context Trap}: Expanding context window to 128k tokens allocates 8GB+ purely for the KV-cache. Keep default context to 4k or 8k unless needed.
+        \item \textbf{Unquantized Weights (\texttt{FP16})}: Attempting to run raw FP16 weights on consumer hardware triggers memory thrashing, swap thrashing, and frozen laptops.
+        \item \textbf{Benchmark Paralyzation}: Spending 40 hours benchmarking 15 different 7B models instead of building your actual agent workflow. Pick \texttt{Qwen2.5} or \texttt{Llama3.1} and start shipping!
+    \end{enumerate}
+\end{gotcha}
+
+\vspace{0.4cm}
+\begin{center}
+    \textbf{\color{ShoeNavy}--- End of Class Notes $\cdot$ Compiled Offline with 100\% Free Open-Source Software ---}
+\end{center}
+
+\end{document}
