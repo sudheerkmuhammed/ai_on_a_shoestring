@@ -1,0 +1,688 @@
+\documentclass[11pt,a4paper]{article}
+
+% Formatting and Geometry
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=0.7in]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% Color Palette (Shoestring Theme)
+\definecolor{ShoeNavy}{RGB}{24, 43, 73}
+\definecolor{ShoeCoral}{RGB}{215, 75, 40}
+\definecolor{ShoeTeal}{RGB}{20, 130, 120}
+\definecolor{ShoeGold}{RGB}{200, 140, 20}
+\definecolor{ShoeGray}{RGB}{245, 247, 250}
+\definecolor{ShoeBorder}{RGB}{220, 225, 232}
+
+% Hyperlink Setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=ShoeNavy,
+    citecolor=ShoeTeal,
+    urlcolor=ShoeCoral
+}
+
+% Section Styling
+\titleformat{\section}
+  {\Large\bfseries\color{ShoeNavy}}{\thesection.}{0.5em}{}[\titlerule]
+\titleformat{\subsection}
+  {\large\bfseries\color{ShoeTeal}}{Slide \thesubsection:}{0.5em}{}
+
+% Custom Boxes for Speaker Notes
+\newtcolorbox{speechbox}[1][What to Say]{
+    colback=white,
+    colframe=ShoeNavy,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    arc=2mm,
+    boxrule=0.8pt,
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    breakable
+}
+
+\newtcolorbox{directionbox}[1][Stage Directions \& Timing]{
+    colback=ShoeCoral!8,
+    colframe=ShoeCoral,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    arc=2mm,
+    boxrule=0.7pt,
+    left=6pt,right=6pt,top=4pt,bottom=4pt
+}
+
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=2pt}
+
+\begin{document}
+
+\begin{center}
+    {\Huge \textbf{\color{ShoeNavy}AI on a Shoestring}}\\[4pt]
+    {\Large \textbf{\color{ShoeCoral}Complete Speaker Script \& Talk Track}}\\[2pt]
+    {\normalsize \textit{Champagne Intelligence on a Beer Budget: Local LLMs, Agents, RAG \& Colibr\`i}}\\[6pt]
+    \textbf{Speaker:} Sudheer K. Mohammed \quad$\bullet$\quad \textbf{Affiliation:} BARC \quad$\bullet$\quad \textbf{Target Duration:} 30 Minutes
+\end{center}
+\vspace{0.3cm}
+\hrule height 1pt
+\vspace{0.4cm}
+
+\section*{Quick Presenter Preparation Checklist}
+\begin{itemize}
+    \item[\checkmark] \textbf{Ollama Daemon Running}: Confirm background service is active (\texttt{ollama serve} or check port \texttt{11434}).
+    \item[\checkmark] \textbf{Models Cached Locally}: Verify \texttt{llama3.2:3b} and \texttt{qwen2.5:3b} are already pulled (\texttt{ollama list}) to avoid relying on conference Wi-Fi.
+    \item[\checkmark] \textbf{Delivery Dynamic}: High energy, technically rigorous, witty, and practical. Position local AI not as a compromise, but as a deliberate superpower for privacy, speed, and cost independence.
+\end{itemize}
+
+\vspace{0.3cm}
+
+% ----------------------------------------------------
+% SLIDE 1
+% ----------------------------------------------------
+\subsection{Title Slide: AI on a Shoestring}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[00:00 - 01:10]} (1 min 10 sec) \quad$\bullet$\quad \textbf{Visual:} Title, subtitle, Shoestring AI logo, BARC emblem.
+    \begin{itemize}
+        \item Start with calm confidence. Deliver the phrase ``marketing fiction'' with a wry smile.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Good morning, everyone.
+
+If you open LinkedIn, TechCrunch, or any tech podcast today, you are told a very specific story: that to build anything meaningful with Artificial Intelligence, you need a \$100 billion datacenter, a liquid-cooled cluster of eight Nvidia H100 GPUs, and a direct pipeline from your corporate credit card into a cloud provider's bank account.
+
+Today, I am here to tell you that this story is marketing fiction.
+
+Welcome to \textbf{`AI on a Shoestring: Champagne Intelligence on a Beer Budget'}.
+
+Over the next thirty minutes, we are going to explore how modern algorithmic breakthroughs---specifically quantization, efficient GGUF packaging, lightweight autonomous agents, local vector stores, and extreme Mixture-of-Experts streaming---allow us to run enterprise-grade, state-of-the-art AI right on consumer hardware. 
+
+No subscriptions, no cloud lock-in, zero privacy leaks, and at zero marginal cost. Let's dive in.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 2
+% ----------------------------------------------------
+\subsection{The Shoestring Manifesto: Why Run AI Locally in 2026?}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[01:10 - 02:25]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} Cloud pain points vs. Shoestring Rule \#1.
+    \begin{itemize}
+        \item Ask for a quick show of hands on subscription fatigue to hook the audience.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Let's start with the pain we all feel.
+
+First, \textbf{Subscription Fatigue}. You start with ChatGPT Plus at \$20 a month. Then your IDE Copilot is \$10. Claude Pro is \$20. Midjourney is \$30. Before you know it, you're spending \$100 a month just to have bots rewrite your emails.
+
+Second, \textbf{Token Anxiety}. If you've ever built an automated script or an agent with a cloud API, you know that sickening feeling in your stomach: \textit{`Did my while loop terminate, or did I just rack up a \$400 bill while I stepped out for lunch?'}
+
+Third, \textbf{Privacy Roulette}. In organizations like BARC, in hospitals, in legal firms, or in our personal projects, data is confidential. Uploading customer records, proprietary source code, or internal research to third-party servers isn't just risky---often it's illegal.
+
+And finally, \textbf{The Airplane Mode Test}. The moment your train enters a tunnel or your Wi-Fi flickers, your high-tech assistant turns into a frozen web page.
+
+That brings us to \textbf{Shoestring Rule Number One}: \textit{Never pay a cloud giant for what an 8-gigabyte laptop and clever math can do while sitting on your couch unplugged.}''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 3
+% ----------------------------------------------------
+\subsection{Narrow vs. Broad AI: Do You Need an AGI to Format a CSV?}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[02:25 - 03:40]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} Broad AI monsters vs. Narrow SLMs.
+    \begin{itemize}
+        \item Use humor: ``You don't hire a Nobel laureate to fold your laundry.''
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``The first mental shift on a shoestring budget is understanding the difference between \textbf{Broad AI} and \textbf{Narrow AI}.
+
+Broad AI models---frontier monsters like GPT-4, Claude 3.5 Sonnet, or Llama-3-405B---are marvels of engineering. They can compose a Shakespearean sonnet explaining quantum mechanics in ancient Greek while debugging a memory leak in Rust. But to run them, you need a small power plant and rack upon rack of datacenter GPUs.
+
+Now ask yourself: \textit{What does 85\% of your actual daily work look like?}
+
+It's extracting dates from an invoice. It's summarizing a PDF. It's writing a Python script to parse a CSV file. It's classifying incoming support tickets.
+
+For that, you do not need an omniscient digital deity. You need a \textbf{Small Language Model (SLM)}---models between 1 billion and 8 billion parameters, like Microsoft's Phi-3.5, Alibaba's Qwen 2.5, or Meta's Llama 3.2.
+
+A nimble, 3-billion-parameter model executing locally will return your parsed JSON in 400 milliseconds, on zero watts of GPU power, without spending a cent.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 4
+% ----------------------------------------------------
+\subsection{The Model Zoo: Different Types for Different Jobs}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[03:40 - 05:00]} (1 min 20 sec) \quad$\bullet$\quad \textbf{Visual:} Model categorization table.
+    \begin{itemize}
+        \item Point out the distinction between Base and Instruct models.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``When you step into the open-source model zoo, you need to know which animal to adopt.
+
+First, \textbf{Base Models}. These are trained purely on raw text prediction. If you prompt a Base model with \textit{`What is the capital of France?'}, it might complete it with \textit{`...and what is the capital of Spain?'} because it thinks it's reading a textbook quiz! Do not chat with Base models.
+
+Second, \textbf{Instruct or Chat Models}. These have undergone Supervised Fine-Tuning and RLHF. They understand instructions, system prompts, roleplay, and structured schemas.
+
+Third, \textbf{Code-Specialized Models} like Qwen2.5-Coder or DeepSeek-Coder. These have been fed billions of lines of syntax trees and git repositories. A 7B coder model often outperforms generalist 70B models on code generation!
+
+Fourth, \textbf{Vision Models} like Moondream or Llama-3.2-Vision, which can read diagrams, parse receipts from photos, or inspect GUI windows.
+
+And fifth, \textbf{Embedding Models} like BGE or Nomic. These are tiny---often under 150 megabytes---and they transform sentences into mathematical vectors for search and RAG.
+
+\textbf{Pro Tip to remember:} Always make sure your download ends with \texttt{-Instruct} or \texttt{-Chat}.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 5
+% ----------------------------------------------------
+\subsection{Model Anatomy \& Weight Formats}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[05:00 - 06:15]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} Formats comparison, GGUF callout.
+    \begin{itemize}
+        \item Explain why GGUF is the king of local edge inference.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``So, what actually lives inside that model file on your hard drive?
+
+Stripped of the marketing buzzwords, a neural network is just an enormous collection of floating-point matrices---weights and biases---together with a tokenizer dictionary that maps text syllables into integers.
+
+Historically, models were saved as PyTorch \texttt{.bin} or \texttt{.pt} files. These used Python's \texttt{pickle} serialization, which had a nasty habit of allowing arbitrary remote code execution. If you downloaded an untrusted pickle file, someone could own your system.
+
+Hugging Face fixed that with \textbf{Safetensors}---pure weight bytes with zero executable code, designed for fast memory mapping.
+
+But for the local shoestring hacker, the reigning champion is \textbf{GGUF}---the GPT-Generated Unified Format, invented by Georgi Gerganov and the \texttt{llama.cpp} community.
+
+Why is GGUF so revolutionary? Because it bundles the quantized weights, the architecture hyperparameters, and the complete tokenizer into \textbf{one single binary file}. It allows instantaneous memory mapping (\texttt{mmap}), meaning your computer can split the model between CPU RAM and GPU VRAM on the fly with zero conversion overhead.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 6
+% ----------------------------------------------------
+\subsection{Quantization: Fitting Camels Through Needles}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[06:15 - 07:45]} (1 min 30 sec) \quad$\bullet$\quad \textbf{Visual:} Float vs. int bins, quantization table.
+    \begin{itemize}
+        \item Highlight Q4\_K\_M as the universal sweet spot.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Now, how do we fit a model that was trained in a billion-dollar datacenter onto a modest laptop? The secret weapon is \textbf{Quantization}.
+
+Deep learning models are trained in 16-bit floating point (\texttt{FP16}). In FP16, every single parameter takes 2 bytes. That means an 8-billion parameter model requires at least 16 gigabytes of VRAM just to sit in memory---before you even type a single word of context! Most consumer laptops simply don't have 16GB of dedicated VRAM.
+
+But researchers noticed something fascinating: neural networks are remarkably noise-tolerant. If you discretize those continuous 16-bit floats down into 8-bit integers, or even 4-bit bins, the model retains roughly 98\% of its reasoning capabilities!
+
+Look at the table on the right. 
+\begin{itemize}
+    \item FP16: 16 GB.
+    \item Q8: 8.5 GB (virtually lossless).
+    \item \textbf{Q4\_K\_M}: 4.8 GB! This is the shoestring sweet spot. You get full conversational quality, but it now fits comfortably inside the unified memory of an ordinary laptop.
+\end{itemize}
+
+A quick warning: don't get greedy and drop to Q2\_K just to save a few megabytes. Two-bit quantization is where hallucination fiestas happen---the model will tell you $2 + 2 = 5$ with absolute confidence!''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 7
+% ----------------------------------------------------
+\subsection{Shoestring Reality Check \& Colibr\`i Teaser}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[07:45 - 09:00]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} Hardware wall dilemma box.
+    \begin{itemize}
+        \item Build suspense for the Colibr\`i deep dive later in the talk.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Now let's do a reality check.
+
+You might say: \textit{`Sudheer, that's fine for an 8B model. But what if I genuinely need frontier-grade reasoning? What if I want to run a 744-billion parameter giant on my \$700 laptop with 24GB of RAM?'}
+
+Under conventional wisdom, that is completely impossible. Even at 4-bit quantization, a 744B model takes around 370 gigabytes of memory. In cloud land, that requires five Nvidia H100 servers costing over \$150,000.
+
+The typical corporate answer is: \textit{`Give up, sign the enterprise contract, and pay per token.'}
+
+But the shoestring answer is: \textit{`Hold my coffee, let's rethink the architecture.'}
+
+Later in this talk, I will show you the \textbf{Colibr\`i Project}---an open-source system written in pure C that runs a 744-billion parameter Mixture-of-Experts model on a normal laptop using fast NVMe SSD streaming.
+
+Keep that puzzle in the back of your mind as we look at runtimes and architectures.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 8
+% ----------------------------------------------------
+\subsection{The Local Runtimes Trinity: llama.cpp, Ollama, LM Studio}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[09:00 - 10:25]} (1 min 25 sec) \quad$\bullet$\quad \textbf{Visual:} Three runtime pillars and bash snippet.
+    \begin{itemize}
+        \item Clearly explain the niche of each tool.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``To run these GGUF models on your PC, you have three primary tools---what I call the \textbf{Local Trinity}.
+
+Number one is \textbf{\texttt{llama.cpp}} by Georgi Gerganov. It is pure C and C++, with zero third-party dependencies. It supports AVX-512 for CPUs, CUDA for Nvidia, ROCm for AMD, and Metal for Apple Silicon. If you want raw speed, granular thread tuning, and zero overhead, this is your engine.
+
+Number two is \textbf{Ollama}. Think of Ollama as `Docker for LLMs'. It wraps \texttt{llama.cpp} in an intuitive CLI and a background daemon. You type \texttt{ollama run llama3.2:3b}, and within seconds it pulls the weights, initializes the model, and exposes an OpenAI-compatible REST server on port 11434.
+
+Number three is \textbf{LM Studio}. If you prefer a visual GUI, LM Studio gives you a slick interface for Mac, Windows, and Linux. You search models directly on Hugging Face, click download, tweak temperature sliders, and chat---all with hardware monitoring built in.
+
+For our hands-on examples today, we'll use Ollama because of its programmatic simplicity.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 9
+% ----------------------------------------------------
+\subsection{The Hugging Face Safari: Navigating the Model Jungle}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[10:25 - 11:45]} (1 min 20 sec) \quad$\bullet$\quad \textbf{Visual:} Model naming anatomy breakdown.
+    \begin{itemize}
+        \item Teach attendees how to identify community quantizers.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Where do these models come from? They live on \textbf{Hugging Face}---which is effectively the GitHub plus App Store of modern AI, hosting over a million open-source models and datasets.
+
+But entering Hugging Face without a guide is dangerous. You'll find thousands of models with confusing names like \texttt{Qwen/Qwen2.5-7B-Instruct-GGUF}.
+
+Let's decode that name:
+\begin{itemize}
+    \item \texttt{Qwen}: The organization or research lab.
+    \item \texttt{Qwen2.5}: The model architecture and generation.
+    \item \texttt{7B}: 7 billion parameters.
+    \item \texttt{Instruct}: It is fine-tuned to follow user instructions.
+    \item \texttt{GGUF}: It is pre-quantized and ready for local engines.
+\end{itemize}
+
+Two community names you should immediately bookmark: \textbf{TheBloke} and \textbf{bartowski}. These community heroes take raw frontier weights the day they are published and quantize them into all GGUF flavors so you don't have to waste hours compiling them yourself.
+
+Also check the \textbf{Open LLM Leaderboard} and filter by parameter count under 8B to find models that punch way above their weight class.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 10
+% ----------------------------------------------------
+\subsection{Dense Models vs. Mixture-of-Experts (MoE)}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[11:45 - 13:00]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} Dense vs. MoE routing schematic.
+    \begin{itemize}
+        \item Bridge the theoretical gap to understand sparse activation.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``To understand the breakthrough behind running giant models locally, we have to look at the structural difference between \textbf{Dense} models and \textbf{Mixture-of-Experts (MoE)} models.
+
+In a \textbf{Dense} model---like Llama 3 8B---every single weight matrix is multiplied for every single token. If the model has 8 billion parameters, all 8 billion compute operations fire on the word `the', on the word `cat', and on the period. It's consistent, but computationally rigid.
+
+In a \textbf{Mixture-of-Experts} architecture, the feed-forward layers are split into several independent sub-networks called `experts'. A lightweight gating network, or `router', looks at the current token and activates only the top-2 or top-4 most relevant experts.
+
+For example, in Mixtral 8x7B, there are 47 billion total parameters on disk. But for any given token, only 13 billion parameters are actually doing math!
+
+Now pause and consider the \textbf{Shoestring Epiphany}:
+If 90\% of the model is sitting idle at any given microsecond... \textit{does it really need to consume expensive, high-voltage VRAM?}
+
+The answer is no.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 11
+% ----------------------------------------------------
+\subsection{Spotlight: The Colibr\`i Project: Extreme MoE in Pure C}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[13:00 - 14:40]} (1 min 40 sec) \quad$\bullet$\quad \textbf{Visual:} 3-Tier memory diagram, specs box.
+    \begin{itemize}
+        \item The dramatic peak of the presentation; show pure engineering passion.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``This brings us to the centerpiece of extreme shoestring engineering: \textbf{The Colibr\`i Project}.
+
+Colibr\`i is an open-source inference engine implemented in \textbf{pure C}, with zero external library bloat. Its explicit design goal is audacious: \textit{run a 744-billion parameter frontier Mixture-of-Experts model on an ordinary consumer laptop.}
+
+How does it achieve what cloud providers claim is impossible? Through a \textbf{Three-Tier Memory Hierarchy}:
+
+Tier 1: \textbf{System RAM (10 to 20 GB)}. The attention layers, embeddings, and token routers are permanently pinned in RAM. They are always fast and always ready.
+
+Tier 2: \textbf{Fast NVMe SSD (\char`~370 GB)}. All the 4-bit routed expert weights stay on your standard M.2 NVMe solid-state drive, which reads at 5 to 7 gigabytes per second.
+
+Tier 3: \textbf{Dynamic LRU Streaming}. When the router picks Expert \#3 and Expert \#17 for the next token, Colibr\`i streams just those specific weight blocks from NVMe via \texttt{mmap}, evaluates them, and keeps the most frequent experts in a fast cache.
+
+The result? An \$800 laptop with 24GB of RAM runs a 744B frontier model at 0.5 to 1.8 tokens per second.
+
+Is 1 token per second slow for a chatbot? Yes! But if you leave it running offline to synthesize a 200-page research paper or conduct a complex offline audit, it costs zero dollars and operates with complete autonomy. That is true democratization.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 12
+% ----------------------------------------------------
+\subsection{Connecting Local Models to Python}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[14:40 - 16:00]} (1 min 20 sec) \quad$\bullet$\quad \textbf{Visual:} Side-by-side Python code listings.
+    \begin{itemize}
+        \item Point out the OpenAI drop-in replacement trick on the right.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Now let's get our hands dirty with code. How do we connect our Python scripts to local models?
+
+You have two straightforward paths.
+
+On the left, \textbf{Method A}: the official \texttt{ollama} Python library. It's four lines of code: \texttt{import ollama}, call \texttt{ollama.chat()} with your model name and messages list, and print the response.
+
+On the right is \textbf{Method B}---and this is your \textbf{Shoestring Superpower}. Ollama exposes an OpenAI-compatible REST API. That means you can import the official \texttt{openai} library, set \texttt{base\_url="http://localhost:11434/v1"}, pass any dummy string as the API key, and your code works identically!
+
+Why does this matter? Because every existing enterprise framework---LangChain, LlamaIndex, CrewAI, AutoGen---already speaks the OpenAI API. You can take an enterprise codebase designed for costly cloud APIs, swap the \texttt{base\_url} to \texttt{localhost:11434}, and the entire stack immediately runs offline for free.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 13
+% ----------------------------------------------------
+\subsection{Autonomous Agents on a Shoestring}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[16:00 - 17:30]} (1 min 30 sec) \quad$\bullet$\quad \textbf{Visual:} ReAct loop diagram, Pydantic schema code.
+    \begin{itemize}
+        \item Explain why local beats cloud for iterative agent loops.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Now let's talk about the buzzword of the year: \textbf{Autonomous Agents}.
+
+What is an agent? It's not magic; it's an automated loop using the \textbf{ReAct} pattern---Reason and Act.
+\begin{enumerate}
+    \item The LLM produces a \textbf{Thought} analyzing what needs to be done.
+    \item It outputs an \textbf{Action}---typically a JSON tool call, like \texttt{query\_db()} or \texttt{calculate\_tax()}.
+    \item Python executes that tool locally and feeds the \textbf{Observation} back into the prompt.
+    \item The LLM iterates until the objective is reached.
+\end{enumerate}
+
+In the cloud, agents are a financial trap. A complex agent task might loop 30 or 50 times to solve a bug or parse a directory. At 50 cloud API calls, a single debugging session costs you \$2 to \$5. With a local model, your marginal cost is exactly zero dollars. You can let an agent loop 10,000 times overnight and it costs only the electricity in your battery.
+
+To make small models reliable, look at the code on the right: we pass \texttt{format=InvoiceData.model\_json\_schema()}. Ollama enforces \textbf{grammar-constrained decoding}. The model literally cannot emit invalid syntax---it is mathematically forced to follow your Pydantic schema!''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 14
+% ----------------------------------------------------
+\subsection{RAG on a Shoestring: Local Private Retrieval}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[17:30 - 19:00]} (1 min 30 sec) \quad$\bullet$\quad \textbf{Visual:} 3-Step RAG pipeline, ChromaDB snippet.
+    \begin{itemize}
+        \item Stress zero external transmission of sensitive institutional data.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``What if your model doesn't know about your internal project files, your scientific papers, or your private notes? We use \textbf{Retrieval-Augmented Generation (RAG)}.
+
+Cloud vendors will try to sell you managed vector database instances costing hundreds of dollars a month. On a shoestring budget, our entire RAG stack runs embedded inside our Python process.
+
+Step 1: Chunk your local documents and embed them using a fast, free local embedding model like \texttt{nomic-embed-text}.
+
+Step 2: Store those vector representations in \textbf{ChromaDB} or \textbf{FAISS}. ChromaDB runs right inside Python memory or saves directly to a local sqlite file. Zero servers to manage.
+
+Step 3: When the user asks a question, retrieve the top 3 matching chunks and inject them directly into your local LLM prompt as context.
+
+The result? You can query sensitive medical records, classified facility schematics, or your personal journal with zero data ever leaving your laptop's memory.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 15
+% ----------------------------------------------------
+\subsection{Demo Use-Case: Local Invoice \& Receipt Extractor}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[19:00 - 20:15]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} Architecture flowchart.
+    \begin{itemize}
+        \item Connect architecture to everyday business/lab realities.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Let's put this together into a concrete demo that every organization needs: \textbf{Automated Receipt and Expense Extraction}.
+
+Imagine you have thousands of unstructured emails, text messages, and messy receipts. You need clean, verified JSON with vendor name, dollar amount, and tax category.
+
+Look at our pipeline:
+\begin{enumerate}
+    \item Raw unstructured text enters the system.
+    \item Our local SLM---\texttt{qwen2.5:3b}---extracts the semantic entities.
+    \item Python tools validate the arithmetic, confirming line items sum to the total.
+    \item We output a verified Pydantic model ready for insertion into an accounting database.
+\end{enumerate}
+
+Here are the specs of this pipeline:
+\begin{itemize}
+    \item Model memory footprint: 2.0 gigabytes of VRAM.
+    \item Inference time: 450 milliseconds.
+    \item API cost: Exactly zero.
+\end{itemize}''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 16
+% ----------------------------------------------------
+\subsection{Demo Walkthrough: Complete Python Implementation}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[20:15 - 21:40]} (1 min 25 sec) \quad$\bullet$\quad \textbf{Visual:} 25-line executable Python code.
+    \begin{itemize}
+        \item Emphasize line 589: passing schema directly into Ollama chat.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Here is the entire script. It fits on a single slide.
+
+We define a Pydantic class called \texttt{ExpenseReceipt} with fields for \texttt{vendor}, \texttt{amount}, and \texttt{category}. Notice we include descriptions in the \texttt{Field} definitions---the local model uses those descriptions as its instruction prompt!
+
+We give it a messy input string: \textit{`Cafe Java. 2 Flat Whites \$9.50, 1 Muffin \$4.50. Total \$14.00 on 12/04.'}
+
+We call \texttt{ollama.chat()} with \texttt{qwen2.5:3b} and set \texttt{format=ExpenseReceipt.model\_json\_schema()}.
+
+Because of constrained sampling, the response is parsed cleanly with \texttt{model\_validate\_json()}. You get a validated Python object back with \texttt{Cafe Java}, \texttt{\$14.0}, and \texttt{Meals}.
+
+No parsing regexes. No API keys. It runs in half a second, completely offline.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 17
+% ----------------------------------------------------
+\subsection{Local Coding Assistants \& Test Harnesses}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[21:40 - 23:00]} (1 min 20 sec) \quad$\bullet$\quad \textbf{Visual:} Continue.dev, Aider, pytest evaluation.
+    \begin{itemize}
+        \item Encourage software engineering rigor for AI pipelines.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Let's talk about coding assistants.
+
+GitHub Copilot costs \$10 a month, and it sends your company's proprietary code to external cloud servers.
+
+Instead, install \textbf{Continue.dev}---an open-source extension for VS Code and JetBrains. Connect it to your local Ollama instance running \texttt{qwen2.5-coder:7b}. For inline tab-completion, point it to a lightweight 1.5B model, which gives you sub-30 millisecond latency while you type!
+
+If you love the terminal, try \textbf{Aider}---a command-line pair programming agent that edits multiple files and automatically generates clean git commits.
+
+And how do you know you can trust your local model?
+Look at the box on the right: build a \textbf{Local Test Harness}. Set up a \texttt{pytest} suite that feeds 50 synthetic test cases to your model on every release. Assert schema adherence, verify mathematical consistency, and track tokens per second. Treat your models like any other software dependency!''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 18
+% ----------------------------------------------------
+\subsection{Building Custom Local Apps: The Shoestring Stack}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[23:00 - 24:15]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} FastAPI microservice snippet.
+    \begin{itemize}
+        \item Show how easy it is to package this for an entire lab/office.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Once you have these models running, how do you turn them into internal applications for your colleagues or team?
+
+You use the \textbf{Shoestring Stack}: \textbf{FastAPI} for your backend REST endpoints, and \textbf{Streamlit} or \textbf{Gradio} for instant interactive web UIs.
+
+In the snippet here, we create a FastAPI endpoint \texttt{/summarize} that takes text and invokes \texttt{ollama.generate()} under the hood.
+
+You can package this whole stack into a single container or install script. You can deploy it onto an isolated air-gapped server in an analytical lab, a hospital clinic, or a remote facility where internet access is strictly forbidden. Your end users simply open their web browser to \texttt{localhost:8000} and get a full AI assistant that never phones home.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 19
+% ----------------------------------------------------
+\subsection{Personal Productivity Hacks with Local AI}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[24:15 - 25:30]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} Bash aliases, automated git commit function.
+    \begin{itemize}
+        \item Mention the bash function \texttt{aicommit} as a daily workhorse.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Beyond writing code and building apps, local AI transforms your daily terminal productivity.
+
+Here are my favorite personal hacks:
+
+First, \textbf{Automated Git Commits}. Look at the bash function on the right: \texttt{aicommit}. It pipes \texttt{git diff --staged} directly into \texttt{qwen2.5-coder:3b}, requests a conventional commit message, and commits it. You never have to stare at a blank commit message prompt again!
+
+Second, \textbf{Shell Command Translator}. Can anyone in this room recite the exact flags for \texttt{tar} or \texttt{find} with \texttt{xargs} without checking StackOverflow? Alias \texttt{q="ollama run qwen2.5:3b"}, ask it for the command, copy, and run.
+
+Third, \textbf{Local Audio Meeting Transcripts}. Combine \texttt{whisper.cpp} for speech-to-text with \texttt{llama3.2} for bulleted action items. Record a meeting, process it locally, and have meeting minutes ready before you leave the conference room.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 20
+% ----------------------------------------------------
+\subsection{Hardware Sizing Guide: What Can Your Rig Run?}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[25:30 - 26:45]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} Hardware tier guide table.
+    \begin{itemize}
+        \item Tell audience to take a picture of this slide for reference.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Whenever I give this talk, people ask: \textit{`Sudheer, what can MY specific machine run?'}
+
+Here is your definitive sizing guide:
+\begin{itemize}
+    \item \textbf{Tier 1: Potato PC} (8GB RAM, CPU only). Run 1B to 3B models like Llama-3.2-1B or SmolLM2. You'll get 15 to 25 tokens per second. Plenty fast for reading and writing!
+    \item \textbf{Tier 2: Everyday Laptop} (16GB RAM). Run 7B to 8B models like Qwen2.5-7B or Llama-3.1-8B at 8 to 14 tokens per second.
+    \item \textbf{Tier 3: Gaming PC} (8GB dedicated VRAM like an RTX 3060). Offload the entire 8B Q4 model into GPU VRAM for blazing 50 to 65 tokens per second.
+    \item \textbf{Tier 4: Apple Silicon} (36GB to 64GB unified memory on an M2/M3/M4). You can run 32B models or quantized 70B models at interactive conversational speeds.
+    \item \textbf{Tier 5: Colibr\`i Mode} (24GB RAM + fast NVMe). You can run massive 744B MoE models via SSD streaming.
+\end{itemize}
+
+And remember the \textbf{Golden Memory Rule}: Always leave 3 to 4 gigabytes of RAM for your operating system. Otherwise, your web browser and background tabs will aggressively terminate your model!''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 21
+% ----------------------------------------------------
+\subsection{Common Traps \& Anti-Patterns}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[26:45 - 28:00]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} Traps vs. Best practices.
+    \begin{itemize}
+        \item Mentoring tone; highlight context window KV-cache memory trap.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Before you start experimenting tonight, let me save you 10 hours of debugging by pointing out the four most common beginner traps.
+
+Trap \#1: \textbf{Downloading raw FP16 models}. You download a model, wonder why it took 16GB of disk space and crashed your system with an Out-of-Memory error. Always verify it's GGUF and quantized!
+
+Trap \#2: \textbf{Context Window Bloat}. A model might boast a 128k token context window. But on an 8GB machine, allocating KV-cache for 128k tokens will eat all your RAM before you even generate one token! Cap your context at 4k or 8k unless you really need to process a whole textbook.
+
+Trap \#3: \textbf{Forgetting GPU Offloading}. In \texttt{llama.cpp}, remember to use the \texttt{-ngl} flag to offload layers to your GPU, or check that Ollama detected your CUDA or Metal drivers.
+
+And our best practice: use \textbf{KV-cache quantization}. With \texttt{llama.cpp}, the flag \texttt{--cache-type-k q8\_0} cuts your context memory footprint in half with zero loss in output quality.''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 22
+% ----------------------------------------------------
+\subsection{Summary: The Democratization of Intelligence}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[28:00 - 29:15]} (1 min 15 sec) \quad$\bullet$\quad \textbf{Visual:} Summary checklist and Final Thought box.
+    \begin{itemize}
+        \item Deliver the final takeaway with inspiring cadence.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``To wrap up:
+
+1. \textbf{Independence}: You do not need venture capital, enterprise contracts, or credit cards to harness frontier artificial intelligence.
+2. \textbf{The Stack}: Ollama, GGUF, the Python OpenAI client, and ChromaDB give you a production-grade autonomous agent and RAG platform that runs entirely on your own terms.
+3. \textbf{Extreme Engineering}: Projects like \textbf{Colibr\`i} prove that architectural ingenuity---sparse MoE routing paired with fast NVMe streaming in pure C---can shatter artificial hardware barriers.
+4. \textbf{Speed and Security}: You get zero latency variability, zero network bottlenecks, and absolute privacy.
+
+I leave you with this final thought:
+
+\textbf{The future of AI does not belong exclusively to distant cloud datacenters. The future of AI is right here, compiled and running on your laptop.}''
+\end{speechbox}
+
+% ----------------------------------------------------
+% SLIDE 23
+% ----------------------------------------------------
+\subsection{Resources \& Shoestring Toolkit / Q\&A}
+\begin{directionbox}
+    \textbf{Cumulative Time:} \texttt{[29:15 - 30:00+]} (45 sec + Q\&A) \quad$\bullet$\quad \textbf{Visual:} Resource links and Q\&A.
+    \begin{itemize}
+        \item Open floor for questions with a welcoming smile.
+    \end{itemize}
+\end{directionbox}
+
+\begin{speechbox}
+``Here are the essential repositories to get you started:
+\begin{itemize}
+    \item \textbf{Ollama} at \url{https://ollama.com}
+    \item \textbf{llama.cpp} on GitHub
+    \item \textbf{The Colibr\`i Project} for extreme MoE streaming
+    \item \textbf{Continue.dev} for your IDE
+    \item \textbf{ChromaDB} for local vector storage
+\end{itemize}
+
+Tonight, go home, grab a 3B or 8B model, quantize to Q4, write your first local agent loop, and build something incredible.
+
+Thank you very much, and I would love to take any questions!''
+\end{speechbox}
+
+\vspace{0.4cm}
+\section*{Anticipated Questions \& Quick Answers}
+\begin{enumerate}
+    \item \textbf{Q: Won't streaming weights from NVMe SSD in Colibr\`i wear out my drive?}  
+    \textit{Answer:} Colibr\`i streams reads, not writes! Modern NVMe SSDs sustain petabytes of sequential reads without degradation. Read endurance is virtually limitless compared to write cycles.
+    \item \textbf{Q: Can small 3B models really follow complex instructions?}  
+    \textit{Answer:} Yes, when constrained! Using grammar sampling (like Pydantic schemas in Ollama), the model cannot deviate from schema syntax. For domain-specific logic, combining an SLM with Python verification tools beats unconstrained 70B models.
+    \item \textbf{Q: How does local inference perform on battery life?}  
+    \textit{Answer:} Significantly better than running heavy browser tabs with streaming websockets! On Apple Silicon or modern Intel/AMD processors with AVX-512, running a 3B model consumes only 5 to 12 watts.
+    \item \textbf{Q: Is fine-tuning necessary for local models?}  
+    \textit{Answer:} Rarely for general tasks. 90\% of use cases are solved by prompt engineering, system instructions, and RAG. Only fine-tune (using LoRA/QLoRA) if you need a very specific proprietary tone or domain vocabulary that prompt context can't cover.
+\end{enumerate}
+
+\end{document}
