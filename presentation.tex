@@ -7,6 +7,7 @@
 % Packages
 \usepackage{appendixnumberbeamer}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{tikz}
@@ -131,8 +132,9 @@
 % ----------------------------------------------------
 \begin{frame}{The Model Zoo: Different Types for Different Jobs}
     \begin{table}
-        \small
-        \begin{tabular}{lll}
+        \scriptsize
+        \renewcommand{\arraystretch}{1.15}
+        \begin{tabularx}{\textwidth}{@{}l l >{\raggedright\arraybackslash}X@{}}
             \toprule
             \textbf{Type} & \textbf{Examples} & \textbf{Superpower / Best Use} \\
             \midrule
@@ -143,11 +145,11 @@
             \textbf{Embedding Models} & BGE-small-en, Nomic-Embed & Vector search for RAG; tiny ($\sim$100MB), lightning fast \\
             \textbf{MoE (Mixture of Experts)} & Mixtral 8x7B, DeepSeek-V3 & Sparse activations; giant capacity, small compute \\
             \bottomrule
-        \end{tabular}
+        \end{tabularx}
     \end{table}
-    \vspace{0.2cm}
+    \vspace{0.15cm}
     \begin{tcolorbox}[colback=ShoePrimary!10, colframe=ShoePrimary, title=\textbf{Pro Tip}]
-        \small
+        \scriptsize
         Always check if a model suffix is \texttt{-Instruct} or \texttt{-Chat}. Chatting with a Base model feels like talking to someone who repeats your questions backwards!
     \end{tcolorbox}
 \end{frame}
